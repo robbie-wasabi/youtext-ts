@@ -20,6 +20,8 @@ spec:
         spec:
             containers:
                 - env:
+                      - name: API_KEY
+                        value:
                       - name: OPENAI_API_KEY
                         value:
                       - name: OPENAI_MODEL

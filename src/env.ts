@@ -16,7 +16,8 @@ const env = {
         appId: process.env.FIREBASE_APP_ID,
         measurementId: process.env.FIREBASE_MEASUREMENT_ID
     },
-    prompt: process.env.DEFAULT_PROMPT || DEFAULT_PROMPT
+    prompt: process.env.DEFAULT_PROMPT || DEFAULT_PROMPT,
+    apiKey: process.env.API_KEY
 }
 
 export default env

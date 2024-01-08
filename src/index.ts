@@ -1,11 +1,32 @@
 import express, { Request, Response, NextFunction } from 'express'
+import bodyParser from 'body-parser';
 import env from './env'
 import { getTranscriptHandler } from './handlers/transcript'
 import { getInterpretationHandler } from './handlers/interpretation'
 import { SimpleView } from './helpers/views'
 import fs from 'fs'
+import rateLimit from 'express-rate-limit';
 
 const app = express()
+app.use(bodyParser.json())
+
+// Middleware to check API key
+// TODO: this is a very basic implementation and should be improved
+const checkApiKey = (req: Request, res: Response, next: NextFunction) => {
+    const apiKey = req.header('X-API-KEY');
+    if (!apiKey || apiKey !== env.apiKey) {
+        return res.status(401).send('Unauthorized');
+    }
+    next();
+}
+
+// Create a rate limiter middleware
+// TODO: this is a very basic implementation and should be improved
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again after 15 minutes'
+});
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +34,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     res.status(500).send('Internal Server Error')
 })
 
-app.get('/favicon.ico', (req: Request, res: Response) => res.status(204))
+// app.get('/favicon.ico', (req: Request, res: Response) => res.status(204))
 
 app.get('/health', (req: Request, res: Response) => {
     res.status(200).send({
@@ -24,11 +45,11 @@ app.get('/health', (req: Request, res: Response) => {
 })
 
 /*
-    curl -X GET 'http://localhost:<port>/<video_id>/interpretation?view=1&useMock=false&prompt=your_prompt'
-
-    
+    Doesn't require API key but is rate limited.
+    curl -X GET \
+        http://localhost:[PORT]/[YT_VIDEO_ID]/interpretation
 */
-app.get('/:id/interpretation', async (req: Request, res: Response, next: NextFunction) => {
+app.get('/:id/interpretation', limiter, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params
         if (!id) throw new Error('Must supply YouTube video ID')
@@ -38,9 +59,6 @@ app.get('/:id/interpretation', async (req: Request, res: Response, next: NextFun
         const parsedMock = JSON.parse(mock as string)
         const parsedSave = JSON.parse(save as string)
 
-        console.log("here")
-        console.log(parsedSave)
-
         const interpretation = await getInterpretationHandler(
             id,
             parsedMock,
@@ -48,6 +66,46 @@ app.get('/:id/interpretation', async (req: Request, res: Response, next: NextFun
             parsedSave
         )
         view == '1'
+            ? res.send(SimpleView(interpretation.content))
+            : res.send(interpretation)
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+})
+
+/*
+   Requires API key, not rate limited.
+
+    ```bash
+        curl -X POST \
+        http://localhost:[PORT]/[YT_VIDEO_ID]/interpretation \
+        -H 'Content-Type: application/json' \
+        -H 'X-API-KEY: your_api_key' \
+        -d '{
+            "prompt": "your_prompt",
+        }'
+    ```
+*/
+app.post('/:id/interpretation', checkApiKey, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        console.log("here")
+        const { id } = req.params
+        if (!id) throw new Error('Must supply YouTube video ID')
+
+        const { view, prompt = env.prompt, mock = false, save = false } = req.body
+        const decodedPrompt = decodeURIComponent(prompt as string)
+        const parsedMock = JSON.parse(mock as string)
+        const parsedSave = JSON.parse(save as string)
+
+        const interpretation = await getInterpretationHandler(
+            id,
+            parsedMock,
+            decodedPrompt,
+            parsedSave
+        )
+        
+        view && view == '1'
             ? res.send(SimpleView(interpretation.content))
             : res.send(interpretation)
     } catch (error) {
@@ -98,7 +156,7 @@ app.get('/', async (req: Request, res: Response) => {
 })
 
 app.listen(env.port, () => {
-    console.log(`Server is running at http://localhost:${env.port}`)
+    console.log(`Server is listening on: ${env.port}`)
 })
 
 export { app }
