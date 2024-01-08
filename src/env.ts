@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-const DEFAULT_PROMPT = 'From the provided content, extract key points as standalone facts or ideas. Present these key points in a coherent, fluent narrative without making references to any speaker or dialogue. The resulting narrative should maintain a smooth flow in the format of a short paper with each sentence delivering significant insights from the content. Make sure to be succinct and comprehensive but also thorough: '
+const DEFAULT_PROMPT = 'Identify and extract key ideas, concepts, or news. Present these as concise bullet points, each delivering significant insights. Avoid references to the source material or summarizing phrases.'
 
 const env = {
     port: process.env.PORT || 3000,
