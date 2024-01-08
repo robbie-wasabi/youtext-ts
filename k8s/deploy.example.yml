@@ -40,6 +40,8 @@ spec:
                         value:
                       - name: FIREBASE_MEASUREMENT_ID
                         value:
+                      - name: DEFAULT_PROMPT
+                        value:
                   image:
                   imagePullPolicy: IfNotPresent
                   name: youtext-services

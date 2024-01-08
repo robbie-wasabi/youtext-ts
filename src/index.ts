@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express'
-import cfg from './env'
+import env from './env'
 import { getTranscriptHandler } from './handlers/transcript'
 import { getInterpretationHandler } from './handlers/interpretation'
 import { SimpleView } from './helpers/views'
@@ -23,19 +23,29 @@ app.get('/health', (req: Request, res: Response) => {
     })
 })
 
+/*
+    curl -X GET 'http://localhost:<port>/<video_id>/interpretation?view=1&useMock=false&prompt=your_prompt'
+
+    
+*/
 app.get('/:id/interpretation', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params
         if (!id) throw new Error('Must supply YouTube video ID')
 
-        let { view, useMock } = req.query
-        useMock = useMock || 'false'
+        const { view, prompt = env.prompt, mock = false, save = false } = req.query
+        const decodedPrompt = decodeURIComponent(prompt as string)
+        const parsedMock = JSON.parse(mock as string)
+        const parsedSave = JSON.parse(save as string)
+
+        console.log("here")
+        console.log(parsedSave)
 
         const interpretation = await getInterpretationHandler(
             id,
-            false,
-            false,
-            JSON.parse(useMock as string)
+            parsedMock,
+            decodedPrompt,
+            parsedSave
         )
         view == '1'
             ? res.send(SimpleView(interpretation.content))
@@ -87,8 +97,8 @@ app.get('/', async (req: Request, res: Response) => {
     `)
 })
 
-app.listen(cfg.port, () => {
-    console.log(`Server is running at http://localhost:${cfg.port}`)
+app.listen(env.port, () => {
+    console.log(`Server is running at http://localhost:${env.port}`)
 })
 
 export { app }

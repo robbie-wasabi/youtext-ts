@@ -6,3 +6,4 @@ firebaseon
 Makefile
 k8s/deploy.yml
 dist/
+examples/

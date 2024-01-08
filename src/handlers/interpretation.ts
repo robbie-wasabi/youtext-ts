@@ -4,33 +4,35 @@ import FirebaseClient from '../clients/firebase'
 import { createMessagesFromText } from '../helpers/llm'
 import { info as logInfo } from '../helpers/logger'
 import { Interpretation, LLMChatMessage } from '../types/index'
-import env from '../env'
 
 export const getInterpretationHandler = async (
     ytId: string,
-    override: boolean = false,
-    postComment: boolean = false,
-    useMockData: boolean = false
+    useMockData: boolean = false,
+    prompt: string = '',
+    save: boolean = false // if true, will save to and read from firebase
 ): Promise<Interpretation> => {
     const info = (message: string) => {
         logInfo(ytId, message)
     }
 
-    if (!useMockData) {
+    if (!useMockData && save) {
         const interpretation = await FirebaseClient.getInterpretation(ytId)
         if (interpretation) {
-            info(`found interpretation`)
+            info(`found existing interpretation in db`)
             return interpretation
         }
     }
 
-    info(`creating interpretation`)
+    info(`creating new interpretation`)
 
     info(`fetching transcript`)
     const transcript = await YoutubeClient.fetchTranscript(ytId, useMockData)
+    if (!transcript) {
+        throw new Error('Could not fetch transcript')
+    }
 
     info(`parsing transcript`)
-    const messages = createMessagesFromText(transcript, env.prompt)
+    const messages = createMessagesFromText(transcript, prompt)
 
     async function createCompletions(messages: LLMChatMessage[]) {
         const completionsPromises = messages.map((m) =>
@@ -49,10 +51,14 @@ export const getInterpretationHandler = async (
         c.data.choices.map((c:any) => c.message.content).join(' ')
     )
 
+    if (!save) 
+        return { 
+            id: ytId, 
+            content 
+        }
+
     info(`saving interpretation to firebase`)
     await FirebaseClient.addInterpretation(ytId, content)
-
-    info(`finished creating interpretation for ${ytId}`)
 
     return {
         id: ytId,

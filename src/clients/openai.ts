@@ -15,7 +15,7 @@ export default class OpenAIClient {
         return await this._openai.createChatCompletion({
             model: this._model,
             messages,
-            temperature: 0.0
+            temperature: 0.01
         })
     }
 }
