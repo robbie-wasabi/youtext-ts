@@ -31,7 +31,7 @@ $ curl https://youtext.io/L_Guz73e6fw/interpretation
 # specify view=1 to return the interpretation *only*
 $ curl https://youtext.io/L_Guz73e6fw/interpretation?view=1
 
-# specify your own prompt. see .env.local for default value
+# specify your own prompt. see .env.example for default value
 $ curl https://youtext.io/L_Guz73e6fw/interpretation?prompt=what%20does%20sam%20altman%20think%20about%20turtles%3F
 ```
 
@@ -79,7 +79,7 @@ NodeJS, express, OpenAI API, Firebase
 
 create .env and fill in values
 ```bash
-$ cp .env.local .env
+$ cp .env.example .env
 ```
 
 install deps
