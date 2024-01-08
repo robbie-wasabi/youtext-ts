@@ -1,0 +1,8 @@
+.env
+.DS_STORE
+node_modules/
+package-lock.json
+firebase.json
+Makefile
+k8s/deploy.yml
+dist/
