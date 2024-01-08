@@ -13,11 +13,11 @@ import {
     DocumentData,
     QuerySnapshot
 } from 'firebase/firestore'
-import config from '../config'
+import env from '../env'
 import { Interpretation } from '../types'
 
 export default class FirebaseClient {
-    static _app: FirebaseApp = initializeApp(config.firebaseConfig)
+    static _app: FirebaseApp = initializeApp(env.firebaseConfig)
     static _db: Firestore = getFirestore(this._app)
 
     static getInterpretations = async (): Promise<DocumentData[]> => {

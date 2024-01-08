@@ -1,5 +1,5 @@
 import { TiktokenModel } from '@dqbd/tiktoken'
-import { Tiktoken } from './tiktoken.js'
+import { Tiktoken } from './tiktoken'
 
 function createMessage(chunk:string, prompt:string) {
     return {
@@ -52,7 +52,7 @@ export function splitText(
         var expectedTokenUsage =
             tiktoken.countMessageTokens(messageWithAdditionalSentence) +
             1
-        console.log(expectedTokenUsage)
+        // console.log(expectedTokenUsage)
         if (expectedTokenUsage <= maxChunkTokenSize) {
             currentChunk.push(s)
         } else {

@@ -1,12 +1,12 @@
 import { Configuration, OpenAIApi } from 'openai'
-import config from '../config.js'
+import env from '../env'
 
 export default class OpenAIClient {
     static _configuration = new Configuration({
-        apiKey: config.openaiApiKey
+        apiKey: env.openaiApiKey
     })
     static _openai = new OpenAIApi(this._configuration)
-    static _model = config.openaiModel
+    static _model = env.openaiModel
 
     // [{role: "user", content: "Hello world"}]
     // https://platform.openai.com/docs/api-reference/chat

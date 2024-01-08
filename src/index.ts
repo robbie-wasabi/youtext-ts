@@ -1,11 +1,8 @@
-import dotenv from 'dotenv'
-dotenv.config()
-
 import express, { Request, Response, NextFunction } from 'express'
-import cfg from './config.js'
-import { getTranscriptHandler } from './handlers/transcript.js'
-import { getInterpretationHandler } from './handlers/interpretation.js'
-import { SimpleView } from './helpers/views.js'
+import cfg from './env'
+import { getTranscriptHandler } from './handlers/transcript'
+import { getInterpretationHandler } from './handlers/interpretation'
+import { SimpleView } from './helpers/views'
 import fs from 'fs'
 
 const app = express()

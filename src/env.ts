@@ -1,11 +1,12 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-const config = {
+const DEFAULT_PROMPT = 'From the provided content, extract key points as standalone facts or ideas. Present these key points in a coherent, fluent narrative without making references to any speaker or dialogue. The resulting narrative should maintain a smooth flow in the format of a short paper with each sentence delivering significant insights from the content. Make sure to be succinct and comprehensive but also thorough: '
+
+const env = {
     port: process.env.PORT || 3000,
     openaiApiKey: process.env.OPENAI_API_KEY,
     openaiModel: process.env.OPENAI_MODEL,
-    useMockData: process.env.USE_MOCK_DATA || true,
     firebaseConfig: {
         apiKey: process.env.FIREBASE_API_KEY,
         authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -14,7 +15,8 @@ const config = {
         messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
         appId: process.env.FIREBASE_APP_ID,
         measurementId: process.env.FIREBASE_MEASUREMENT_ID
-    }
+    },
+    prompt: process.env.PROMPT || DEFAULT_PROMPT
 }
 
-export default config
+export default env

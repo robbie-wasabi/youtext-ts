@@ -1,13 +1,13 @@
 # Dockerfile
 
-# Use the official Node.js image as the base image
+# Use the official Node image as the base image
 FROM node
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
+# Copy packageon and package-lockon to the working directory
+COPY package*on ./
 
 # Install the required dependencies
 RUN npm install

@@ -1,8 +1,8 @@
 .env
 .DS_STORE
 node_modules/
-package-lock.json
-firebase.json
+package-lockon
+firebaseon
 Makefile
 k8s/deploy.yml
 dist/

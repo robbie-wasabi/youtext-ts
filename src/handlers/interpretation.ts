@@ -1,11 +1,10 @@
-import OpenAIClient from '../clients/openai.js'
-import YoutubeClient from '../clients/youtube.js'
-import FirebaseClient from '../clients/firebase.js'
-import { createMessagesFromText } from '../helpers/llm.js'
-import { info as logInfo } from '../helpers/logger.js'
-import { Interpretation, LLMChatMessage } from '../types/index.js'
-
-const prompt = `From the provided content, extract key points as standalone facts or ideas. Present these key points in a coherent, fluent narrative without making references to any speaker or dialogue. The resulting narrative should maintain a smooth flow in the format of a short paper with each sentence delivering significant insights from the content. Make sure to be succinct and comprehensive but also thorough`
+import OpenAIClient from '../clients/openai'
+import YoutubeClient from '../clients/youtube'
+import FirebaseClient from '../clients/firebase'
+import { createMessagesFromText } from '../helpers/llm'
+import { info as logInfo } from '../helpers/logger'
+import { Interpretation, LLMChatMessage } from '../types/index'
+import env from '../env'
 
 export const getInterpretationHandler = async (
     ytId: string,
@@ -31,7 +30,7 @@ export const getInterpretationHandler = async (
     const transcript = await YoutubeClient.fetchTranscript(ytId, useMockData)
 
     info(`parsing transcript`)
-    const messages = createMessagesFromText(transcript, prompt)
+    const messages = createMessagesFromText(transcript, env.prompt)
 
     async function createCompletions(messages: LLMChatMessage[]) {
         const completionsPromises = messages.map((m) =>

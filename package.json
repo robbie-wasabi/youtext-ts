@@ -5,7 +5,7 @@
   "main": "dist/index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "tsc && node dist/index.js",
+    "start": "tsc && node dist/index",
     "nodemon": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node --loader ts-node/esm' src/index.ts"
   },
